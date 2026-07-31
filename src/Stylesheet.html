@@ -127,6 +127,18 @@
   }
   .serve-dot.active { visibility: visible; }
 
+  .score-buttons { display: flex; gap: 10px; margin-top: 4px; }
+  .score-buttons .score-btn {
+    padding: 12px 22px;
+    font-size: 1.3rem;
+    font-weight: 800;
+    border-radius: 10px;
+    color: var(--text);
+  }
+  .score-buttons .score-btn.plus { background: var(--green); color: #06210f; }
+  .score-buttons .score-btn.minus { background: #2a3752; }
+  .score-buttons .score-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
   .games-tally { display: flex; gap: 6px; margin-top: 10px; }
   .games-tally .pip {
     width: 10px; height: 10px; border-radius: 50%;

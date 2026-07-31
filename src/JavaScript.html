@@ -29,9 +29,16 @@
   document.getElementById('side1').addEventListener('click', function () { awardRally('team1'); });
   document.getElementById('side2').addEventListener('click', function () { awardRally('team2'); });
 
-  document.getElementById('undoBtn').addEventListener('click', function () {
+  document.getElementById('plus1').addEventListener('click', function (e) { e.stopPropagation(); awardRally('team1'); });
+  document.getElementById('plus2').addEventListener('click', function (e) { e.stopPropagation(); awardRally('team2'); });
+  document.getElementById('minus1').addEventListener('click', function (e) { e.stopPropagation(); runUndo(); });
+  document.getElementById('minus2').addEventListener('click', function (e) { e.stopPropagation(); runUndo(); });
+
+  document.getElementById('undoBtn').addEventListener('click', runUndo);
+
+  function runUndo() {
     google.script.run.withSuccessHandler(render).withFailureHandler(onError).undo();
-  });
+  }
 
   document.getElementById('newGameBtn').addEventListener('click', function () {
     if (lastState) lastAcknowledgedGameCount = lastState.games.length;
@@ -128,7 +135,12 @@
       newGameBtn.classList.add('hidden');
     }
 
-    document.getElementById('undoBtn').disabled = !state.history || state.history.length === 0;
+    var noHistory = !state.history || state.history.length === 0;
+    document.getElementById('undoBtn').disabled = noHistory;
+    document.getElementById('minus1').disabled = noHistory;
+    document.getElementById('minus2').disabled = noHistory;
+    document.getElementById('plus1').disabled = awaitingNextGame || !!state.matchWinner;
+    document.getElementById('plus2').disabled = awaitingNextGame || !!state.matchWinner;
   }
 
   function renderTally(elId, games, teamNum, gamesToWin) {
