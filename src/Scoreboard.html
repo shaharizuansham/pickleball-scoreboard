@@ -7,9 +7,14 @@
 <body>
 
   <nav class="tabbar">
-    <button class="tab-btn active" data-tab="scoreboard" type="button">🏓 Scoreboard</button>
-    <button class="tab-btn" data-tab="history" type="button">📜 History</button>
-    <button class="tab-btn" data-tab="about" type="button">ℹ️ About &amp; Rules</button>
+    <div class="tabbar-tabs">
+      <button class="tab-btn active" data-tab="scoreboard" type="button">🏓 Scoreboard</button>
+      <button class="tab-btn" data-tab="history" type="button">📜 History</button>
+      <button class="tab-btn" data-tab="about" type="button">ℹ️ About &amp; Rules</button>
+    </div>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark/light mode">
+      <span class="theme-toggle-knob" id="themeToggleKnob">🌙</span>
+    </button>
   </nav>
 
   <div id="tab-scoreboard" class="tab-view">

@@ -7,7 +7,10 @@ Sheet logs every completed game to a `MatchHistory` tab and every completed
 match (with start/end time and total duration) to a `Matches` tab.
 Fully responsive — on a narrow phone screen the two-team score view stacks
 vertically instead of squeezing side-by-side, and every button keeps a
-finger-sized touch target.
+finger-sized touch target. "Stadium broadcast" visual style — chunky
+display type, tabular-mono score digits, floodlight-glow dark theme by
+default with a warm light theme behind a toggle switch (top-right of the
+tab bar), remembered per-browser via `localStorage`.
 
 ## How scoring works
 

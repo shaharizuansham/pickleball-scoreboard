@@ -3,6 +3,25 @@
   var lastAcknowledgedGameCount = 0;
   var lastState = null;
   var matchTimerHandle = null;
+  var lastScore1 = null;
+  var lastScore2 = null;
+
+  (function initTheme() {
+    var saved = null;
+    try { saved = localStorage.getItem('pbTheme'); } catch (e) {}
+    applyTheme(saved === 'light' ? 'light' : 'dark');
+  })();
+
+  document.getElementById('themeToggle').addEventListener('click', function () {
+    var current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+    applyTheme(current === 'light' ? 'dark' : 'light');
+  });
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.getElementById('themeToggleKnob').textContent = theme === 'light' ? '☀️' : '🌙';
+    try { localStorage.setItem('pbTheme', theme); } catch (e) {}
+  }
 
   function formatDuration(ms) {
     var totalSec = Math.floor(ms / 1000);
@@ -167,6 +186,8 @@
       .withSuccessHandler(function (state) {
         document.getElementById('startBtn').disabled = false;
         resetAcknowledgement();
+        lastScore1 = null;
+        lastScore2 = null;
         render(state);
       })
       .withFailureHandler(onError)
@@ -226,6 +247,16 @@
     alert('Something went wrong: ' + (err && err.message ? err.message : err));
   }
 
+  function bumpScoreIfChanged(el, newScore, side) {
+    var last = side === 1 ? lastScore1 : lastScore2;
+    if (last !== null && newScore !== last) {
+      el.classList.remove('pop');
+      void el.offsetWidth; // restart animation
+      el.classList.add('pop');
+    }
+    if (side === 1) lastScore1 = newScore; else lastScore2 = newScore;
+  }
+
   function render(state) {
     var setup = document.getElementById('setup');
     var board = document.getElementById('board');
@@ -234,6 +265,8 @@
       resetAcknowledgement();
       stopMatchTimer();
       lastState = null;
+      lastScore1 = null;
+      lastScore2 = null;
       setup.classList.remove('hidden');
       board.classList.add('hidden');
       return;
@@ -251,8 +284,12 @@
     var cur = state.current;
     var isRally = state.scoringMode === 'rally';
     var scoreSuffix = isRally ? '' : ('-' + cur.serverNumber);
-    document.getElementById('score1').textContent = cur.team1Score + (!isRally && cur.servingTeam === 1 ? scoreSuffix : '');
-    document.getElementById('score2').textContent = cur.team2Score + (!isRally && cur.servingTeam === 2 ? scoreSuffix : '');
+    var score1El = document.getElementById('score1');
+    var score2El = document.getElementById('score2');
+    score1El.textContent = cur.team1Score + (!isRally && cur.servingTeam === 1 ? scoreSuffix : '');
+    score2El.textContent = cur.team2Score + (!isRally && cur.servingTeam === 2 ? scoreSuffix : '');
+    bumpScoreIfChanged(score1El, cur.team1Score, 1);
+    bumpScoreIfChanged(score2El, cur.team2Score, 2);
 
     document.getElementById('scoreLegend').innerHTML = isRally
       ? 'Rally scoring: every rally is a point for whoever wins it, regardless of who served. "Serving: [name]" under the green dot shows who\'s serving next.'
