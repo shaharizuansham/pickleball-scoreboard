@@ -55,7 +55,24 @@ src/
      your Google Workspace domain if preferred)
 5. Click **Deploy**, authorize the app when prompted, and copy the Web
    App URL.
-6. Open that URL on the tablet/TV/laptop you'll use courtside.
+6. Open that URL on the tablet/TV/laptop you'll use courtside — or use
+   the short link below.
+
+### Short link (GitHub Pages)
+
+[`shaharizuansham.github.io/pickleball-scoreboard`](https://shaharizuansham.github.io/pickleball-scoreboard)
+redirects straight to the Apps Script Web App URL above (see
+`index.html`). It's just a forwarding page — you'll still need to sign
+in with a Google account that has access to the deployment.
+
+If the Apps Script deployment URL ever changes (e.g. redeployed under a
+different account), update the URL in `index.html` (both the
+`<meta http-equiv="refresh">` tag and the `window.location.replace(...)`
+call) and push.
+
+To enable GitHub Pages on this repo (one-time, done via the GitHub web
+UI): **Settings → Pages → Source: Deploy from a branch → Branch: `main`
+/ `(root)` → Save**.
 
 ## Using it
 
