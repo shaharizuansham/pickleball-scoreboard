@@ -178,6 +178,13 @@
   document.getElementById('minus1').addEventListener('click', runUndo);
   document.getElementById('minus2').addEventListener('click', runUndo);
 
+  document.getElementById('setServe1').addEventListener('click', function () { setServingTeamLive(1); });
+  document.getElementById('setServe2').addEventListener('click', function () { setServingTeamLive(2); });
+
+  function setServingTeamLive(teamNum) {
+    google.script.run.withSuccessHandler(render).withFailureHandler(onError).setServingTeam(teamNum);
+  }
+
   document.getElementById('undoBtn').addEventListener('click', runUndo);
 
   function runUndo() {
@@ -307,6 +314,10 @@
     document.getElementById('minus2').disabled = noHistory;
     document.getElementById('plus1').disabled = awaitingNextGame || !!state.matchWinner;
     document.getElementById('plus2').disabled = awaitingNextGame || !!state.matchWinner;
+
+    var setServeDisabled = awaitingNextGame || !!state.matchWinner;
+    document.getElementById('setServe1').disabled = setServeDisabled || cur.servingTeam === 1;
+    document.getElementById('setServe2').disabled = setServeDisabled || cur.servingTeam === 2;
 
     var endMatchBtn = document.getElementById('endMatchBtn');
     endMatchBtn.classList.toggle('hidden', !!state.matchWinner);

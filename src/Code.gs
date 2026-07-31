@@ -132,6 +132,24 @@ function checkGameWinner_(cur, winScore, winBy) {
   return null;
 }
 
+/**
+ * Manually corrects which team is serving, without changing any score.
+ * For fixing a scorekeeper mistake mid-game — not part of normal play.
+ */
+function setServingTeam(teamNum) {
+  var state = getState();
+  if (!state || state.matchWinner) return state;
+
+  pushUndoSnapshot_(state);
+
+  var cur = state.current;
+  cur.servingTeam = Number(teamNum) === 2 ? 2 : 1;
+  cur.serverNumber = 1;
+
+  saveState_(state);
+  return state;
+}
+
 /** Reverts the last awarded rally / game-completion. */
 function undo() {
   var state = getState();

@@ -97,6 +97,9 @@ The app has three tabs: **Scoreboard**, **History**, and **About & Rules**.
    the point totals.
 3. **−** (or the **Undo** button) reverts the last point awarded, or the
    last game completion.
+4. **🎾 Set as server** under each side manually corrects who's serving,
+   without changing any score — for fixing a scorekeeper mistake mid-game.
+   It's disabled for whichever side is already marked as serving.
 4. A live **match timer** runs from the moment you tap Start Match, and
    freezes ("final") once the match ends.
 5. A running list of completed games for the current match is shown below
