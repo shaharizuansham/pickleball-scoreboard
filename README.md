@@ -5,6 +5,9 @@ A courtside digital scoreboard for **doubles pickleball**, built entirely on
 the Apps Script Web App *is* the scoreboard UI, and the container Google
 Sheet logs every completed game to a `MatchHistory` tab and every completed
 match (with start/end time and total duration) to a `Matches` tab.
+Fully responsive — on a narrow phone screen the two-team score view stacks
+vertically instead of squeezing side-by-side, and every button keeps a
+finger-sized touch target.
 
 ## How scoring works
 

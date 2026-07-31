@@ -361,4 +361,33 @@
     font-weight: 800;
     font-size: 1.4rem;
   }
+
+  /* --- Touch targets: keep every tappable control comfortably finger-sized --- */
+  button { min-height: 44px; }
+  .set-serve-btn { min-height: 36px; } /* secondary/small by design */
+
+  /* --- Mobile (narrow phone) layout --- */
+  @media (max-width: 640px) {
+    #setup { padding: 16px; margin: 12px auto; }
+    .row { flex-wrap: wrap; }
+    .row > div { flex: 1 1 45%; }
+
+    .tab-btn { font-size: 0.7rem; padding: 10px 4px; }
+
+    /* Stack the two sides top/bottom instead of squeezing them side-by-side. */
+    .score-row { flex-direction: column; min-height: auto; }
+    .divider { width: 100%; height: 2px; }
+    .side { padding: 14px 12px; }
+    .side .score { font-size: clamp(3rem, 20vw, 5rem); margin: 8px 0; }
+    .side .name { font-size: 1.3rem; }
+
+    .score-buttons .score-btn { padding: 12px 20px; font-size: 1.15rem; }
+
+    .controls button { padding: 12px 14px; font-size: 0.88rem; }
+
+    .coin { width: 72px; height: 72px; }
+    .coin-face { font-size: 1.8rem; }
+
+    .history-table th, .history-table td { padding: 6px 8px; font-size: 0.8rem; }
+  }
 </style>
