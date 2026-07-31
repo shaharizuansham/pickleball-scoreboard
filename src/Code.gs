@@ -42,9 +42,9 @@ function pushUndoSnapshot_(state) {
 
 /**
  * Starts a new match. teamX = { name, players: [p1, p2] }.
- * bestOf: 1|3|5, winScore: 11|15|21.
+ * bestOf: 1|3|5, winScore: 11|15|21. firstServeTeam: 1|2 (who serves first, e.g. coin toss winner).
  */
-function startMatch(team1, team2, bestOf, winScore) {
+function startMatch(team1, team2, bestOf, winScore, firstServeTeam) {
   var state = {
     team1: { name: team1.name || 'Team A', players: [team1.players[0] || 'Player 1', team1.players[1] || 'Player 2'] },
     team2: { name: team2.name || 'Team B', players: [team2.players[0] || 'Player 1', team2.players[1] || 'Player 2'] },
@@ -52,7 +52,7 @@ function startMatch(team1, team2, bestOf, winScore) {
     winScore: Number(winScore) || 11,
     winBy: 2,
     games: [],
-    current: freshGame_(1),
+    current: freshGame_(Number(firstServeTeam) === 2 ? 2 : 1),
     history: [],
     matchWinner: null,
     matchStartTime: Date.now(),

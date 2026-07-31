@@ -91,6 +91,23 @@
     wrap.innerHTML = html;
   }
 
+  var firstServeTeam = 1;
+  document.getElementById('firstServeTeam1').addEventListener('click', function () { setFirstServeTeam(1); });
+  document.getElementById('firstServeTeam2').addEventListener('click', function () { setFirstServeTeam(2); });
+
+  document.getElementById('t1name').addEventListener('input', function () {
+    document.getElementById('firstServeTeam1').textContent = this.value || 'Team A';
+  });
+  document.getElementById('t2name').addEventListener('input', function () {
+    document.getElementById('firstServeTeam2').textContent = this.value || 'Team B';
+  });
+
+  function setFirstServeTeam(teamNum) {
+    firstServeTeam = teamNum;
+    document.getElementById('firstServeTeam1').classList.toggle('active', teamNum === 1);
+    document.getElementById('firstServeTeam2').classList.toggle('active', teamNum === 2);
+  }
+
   document.getElementById('startBtn').addEventListener('click', function () {
     var team1 = {
       name: document.getElementById('t1name').value || 'Team A',
@@ -111,7 +128,7 @@
         render(state);
       })
       .withFailureHandler(onError)
-      .startMatch(team1, team2, bestOf, winScore);
+      .startMatch(team1, team2, bestOf, winScore, firstServeTeam);
   });
 
   document.getElementById('plus1').addEventListener('click', function () { awardRally('team1'); });
