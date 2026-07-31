@@ -52,7 +52,7 @@
 
   <div id="board" class="hidden">
     <div class="status-bar" id="statusBar"></div>
-    <div class="legend">Score shown as <b>points</b> for the receiving side, and <b>points-server#</b> (e.g. "2-2") for the side currently serving &mdash; the digit after the dash is server 1 or 2, not a second score. Green dot = who's serving.</div>
+    <div class="legend">Score shown as <b>points</b> for the receiving side, and <b>points-server#</b> (e.g. "2-2") for the side currently serving &mdash; the digit after the dash is server 1 or 2, not a second score. "Serving: [name]" under the green dot shows exactly who's up.</div>
     <div id="gameOverBanner" class="game-over-banner hidden"></div>
     <div id="matchOverBanner" class="match-over-banner hidden"></div>
 
@@ -62,6 +62,7 @@
         <div class="players" id="players1"></div>
         <div class="score" id="score1">0</div>
         <div class="serve-dot" id="serve1"></div>
+        <div class="serving-label" id="servingLabel1"></div>
         <div class="score-buttons">
           <button class="score-btn minus" id="minus1" type="button">&minus;</button>
           <button class="score-btn plus" id="plus1" type="button">+1</button>
@@ -74,6 +75,7 @@
         <div class="players" id="players2"></div>
         <div class="score" id="score2">0</div>
         <div class="serve-dot" id="serve2"></div>
+        <div class="serving-label" id="servingLabel2"></div>
         <div class="score-buttons">
           <button class="score-btn minus" id="minus2" type="button">&minus;</button>
           <button class="score-btn plus" id="plus2" type="button">+1</button>

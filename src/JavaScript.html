@@ -91,6 +91,9 @@
     document.getElementById('serve1').classList.toggle('active', cur.servingTeam === 1);
     document.getElementById('serve2').classList.toggle('active', cur.servingTeam === 2);
 
+    setServingLabel('servingLabel1', state.team1, cur, 1);
+    setServingLabel('servingLabel2', state.team2, cur, 2);
+
     var gamesToWin = Math.ceil(state.bestOf / 2);
     renderTally('tally1', state.games, 1, gamesToWin);
     renderTally('tally2', state.games, 2, gamesToWin);
@@ -138,6 +141,18 @@
     document.getElementById('minus2').disabled = noHistory;
     document.getElementById('plus1').disabled = awaitingNextGame || !!state.matchWinner;
     document.getElementById('plus2').disabled = awaitingNextGame || !!state.matchWinner;
+  }
+
+  function setServingLabel(elId, team, cur, teamNum) {
+    var el = document.getElementById(elId);
+    if (cur.servingTeam !== teamNum) {
+      el.classList.remove('active');
+      el.textContent = '';
+      return;
+    }
+    var name = team.players[cur.serverNumber - 1] || ('Server ' + cur.serverNumber);
+    el.textContent = 'Serving: ' + name;
+    el.classList.add('active');
   }
 
   function renderTally(elId, games, teamNum, gamesToWin) {
