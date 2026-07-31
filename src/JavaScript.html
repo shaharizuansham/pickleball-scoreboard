@@ -1,0 +1,147 @@
+<script>
+  var awaitingNextGame = false;
+  var lastAcknowledgedGameCount = 0;
+  var lastState = null;
+
+  document.getElementById('startBtn').addEventListener('click', function () {
+    var team1 = {
+      name: document.getElementById('t1name').value || 'Team A',
+      players: [document.getElementById('t1p1').value, document.getElementById('t1p2').value]
+    };
+    var team2 = {
+      name: document.getElementById('t2name').value || 'Team B',
+      players: [document.getElementById('t2p1').value, document.getElementById('t2p2').value]
+    };
+    var bestOf = document.getElementById('bestOf').value;
+    var winScore = document.getElementById('winScore').value;
+
+    this.disabled = true;
+    google.script.run
+      .withSuccessHandler(function (state) {
+        document.getElementById('startBtn').disabled = false;
+        resetAcknowledgement();
+        render(state);
+      })
+      .withFailureHandler(onError)
+      .startMatch(team1, team2, bestOf, winScore);
+  });
+
+  document.getElementById('side1').addEventListener('click', function () { awardRally('team1'); });
+  document.getElementById('side2').addEventListener('click', function () { awardRally('team2'); });
+
+  document.getElementById('undoBtn').addEventListener('click', function () {
+    google.script.run.withSuccessHandler(render).withFailureHandler(onError).undo();
+  });
+
+  document.getElementById('newGameBtn').addEventListener('click', function () {
+    if (lastState) lastAcknowledgedGameCount = lastState.games.length;
+    render(lastState);
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', function () {
+    if (!confirm('Reset the whole match? This clears the current scoreboard.')) return;
+    google.script.run.withSuccessHandler(render).withFailureHandler(onError).resetMatch();
+  });
+
+  function awardRally(side) {
+    if (awaitingNextGame) return; // game finished, waiting for "Start Next Game"
+    google.script.run.withSuccessHandler(render).withFailureHandler(onError).awardRally(side);
+  }
+
+  function resetAcknowledgement() {
+    lastAcknowledgedGameCount = 0;
+    awaitingNextGame = false;
+  }
+
+  function onError(err) {
+    console.error(err);
+    alert('Something went wrong: ' + (err && err.message ? err.message : err));
+  }
+
+  function render(state) {
+    var setup = document.getElementById('setup');
+    var board = document.getElementById('board');
+
+    if (!state) {
+      resetAcknowledgement();
+      lastState = null;
+      setup.classList.remove('hidden');
+      board.classList.add('hidden');
+      return;
+    }
+
+    lastState = state;
+    setup.classList.add('hidden');
+    board.classList.remove('hidden');
+
+    document.getElementById('name1').textContent = state.team1.name;
+    document.getElementById('name2').textContent = state.team2.name;
+    document.getElementById('players1').textContent = state.team1.players.filter(Boolean).join(' / ');
+    document.getElementById('players2').textContent = state.team2.players.filter(Boolean).join(' / ');
+
+    var cur = state.current;
+    var scoreSuffix = '-' + cur.serverNumber;
+    document.getElementById('score1').textContent = cur.team1Score + (cur.servingTeam === 1 ? scoreSuffix : '');
+    document.getElementById('score2').textContent = cur.team2Score + (cur.servingTeam === 2 ? scoreSuffix : '');
+
+    document.getElementById('serve1').classList.toggle('active', cur.servingTeam === 1);
+    document.getElementById('serve2').classList.toggle('active', cur.servingTeam === 2);
+
+    var gamesToWin = Math.ceil(state.bestOf / 2);
+    renderTally('tally1', state.games, 1, gamesToWin);
+    renderTally('tally2', state.games, 2, gamesToWin);
+
+    var team1Wins = state.games.filter(function (g) { return g.winner === 1; }).length;
+    var team2Wins = state.games.filter(function (g) { return g.winner === 2; }).length;
+
+    var statusBar = document.getElementById('statusBar');
+    statusBar.textContent = 'Game ' + (state.games.length + (state.matchWinner ? 0 : 1)) +
+      ' of best-of-' + state.bestOf + '  ·  Games won ' + team1Wins + '-' + team2Wins;
+
+    var gameOverBanner = document.getElementById('gameOverBanner');
+    var matchOverBanner = document.getElementById('matchOverBanner');
+    var newGameBtn = document.getElementById('newGameBtn');
+
+    var lastGame = state.games[state.games.length - 1];
+    var gameJustEnded = lastGame && !state.matchWinner &&
+      state.games.length > lastAcknowledgedGameCount;
+
+    if (state.matchWinner) {
+      awaitingNextGame = false;
+      var winnerName = state.matchWinner === 1 ? state.team1.name : state.team2.name;
+      matchOverBanner.textContent = '🏆 ' + winnerName + ' wins the match!';
+      matchOverBanner.classList.remove('hidden');
+      gameOverBanner.classList.add('hidden');
+      newGameBtn.classList.add('hidden');
+    } else if (gameJustEnded) {
+      awaitingNextGame = true;
+      var gWinnerName = lastGame.winner === 1 ? state.team1.name : state.team2.name;
+      gameOverBanner.textContent = gWinnerName + ' wins game ' + state.games.length +
+        ' (' + lastGame.team1Score + '-' + lastGame.team2Score + ')';
+      gameOverBanner.classList.remove('hidden');
+      matchOverBanner.classList.add('hidden');
+      newGameBtn.classList.remove('hidden');
+    } else {
+      awaitingNextGame = false;
+      gameOverBanner.classList.add('hidden');
+      matchOverBanner.classList.add('hidden');
+      newGameBtn.classList.add('hidden');
+    }
+
+    document.getElementById('undoBtn').disabled = !state.history || state.history.length === 0;
+  }
+
+  function renderTally(elId, games, teamNum, gamesToWin) {
+    var el = document.getElementById(elId);
+    el.innerHTML = '';
+    var won = games.filter(function (g) { return g.winner === teamNum; }).length;
+    for (var i = 0; i < gamesToWin; i++) {
+      var pip = document.createElement('div');
+      pip.className = 'pip' + (i < won ? ' won' : '');
+      el.appendChild(pip);
+    }
+  }
+
+  // Initial load
+  google.script.run.withSuccessHandler(render).withFailureHandler(onError).getState();
+</script>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <?!= include('Stylesheet'); ?>
+</head>
+<body>
+
+  <div id="setup">
+    <h1>🏓 Pickleball Scoreboard</h1>
+    <p class="sub">Doubles &middot; traditional side-out scoring</p>
+
+    <div class="team-form team1">
+      <label>Team A name</label>
+      <input id="t1name" value="Team A">
+      <div class="row">
+        <div><label>Player 1</label><input id="t1p1" placeholder="Player 1"></div>
+        <div><label>Player 2</label><input id="t1p2" placeholder="Player 2"></div>
+      </div>
+    </div>
+
+    <div class="team-form team2">
+      <label>Team B name</label>
+      <input id="t2name" value="Team B">
+      <div class="row">
+        <div><label>Player 1</label><input id="t2p1" placeholder="Player 1"></div>
+        <div><label>Player 2</label><input id="t2p2" placeholder="Player 2"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Best of</label>
+        <select id="bestOf">
+          <option value="1">1 game</option>
+          <option value="3" selected>3 games</option>
+          <option value="5">5 games</option>
+        </select>
+      </div>
+      <div>
+        <label>Win score</label>
+        <select id="winScore">
+          <option value="11" selected>11</option>
+          <option value="15">15</option>
+          <option value="21">21</option>
+        </select>
+      </div>
+    </div>
+
+    <button id="startBtn">Start Match</button>
+  </div>
+
+  <div id="board" class="hidden">
+    <div class="status-bar" id="statusBar"></div>
+    <div id="gameOverBanner" class="game-over-banner hidden"></div>
+    <div id="matchOverBanner" class="match-over-banner hidden"></div>
+
+    <div class="score-row">
+      <div class="side team1" id="side1">
+        <div class="name" id="name1"></div>
+        <div class="players" id="players1"></div>
+        <div class="score" id="score1">0</div>
+        <div class="serve-dot" id="serve1"></div>
+        <div class="games-tally" id="tally1"></div>
+      </div>
+      <div class="divider"></div>
+      <div class="side team2" id="side2">
+        <div class="name" id="name2"></div>
+        <div class="players" id="players2"></div>
+        <div class="score" id="score2">0</div>
+        <div class="serve-dot" id="serve2"></div>
+        <div class="games-tally" id="tally2"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="undoBtn">Undo</button>
+      <button id="newGameBtn" class="primary hidden">Start Next Game</button>
+      <button id="resetBtn" class="danger">Reset Match</button>
+    </div>
+  </div>
+
+  <?!= include('JavaScript'); ?>
+</body>
+</html>
