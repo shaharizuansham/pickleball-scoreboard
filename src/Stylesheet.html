@@ -164,6 +164,59 @@
   .serve-choice-btn.team1.active { background: rgba(34,211,238,0.15); color: var(--team1); border-color: var(--team1); }
   .serve-choice-btn.team2.active { background: rgba(249,115,22,0.15); color: var(--team2); border-color: var(--team2); }
 
+  #setup p.sub.small { font-size: 0.75rem; text-align: center; margin: 4px 0 16px; }
+
+  /* --- Coin toss --- */
+  .coin-toss {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0 16px;
+    perspective: 600px;
+  }
+
+  .coin {
+    width: 90px;
+    height: 90px;
+    position: relative;
+    transform-style: preserve-3d;
+    transform: rotateY(0deg);
+    margin-bottom: 14px;
+    transition: transform 1.6s cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  .coin.spinning { transition: transform 1.6s cubic-bezier(0.2, 0.7, 0.3, 1); }
+
+  .coin-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    font-weight: 800;
+    backface-visibility: hidden;
+    box-shadow: inset 0 0 0 4px rgba(255,255,255,0.15), 0 4px 14px rgba(0,0,0,0.4);
+  }
+  .coin-front { background: linear-gradient(160deg, var(--team1), #0b6b7a); color: #06210f; }
+  .coin-back { background: linear-gradient(160deg, var(--team2), #7a3a08); color: #2a1200; transform: rotateY(180deg); }
+
+  #flipCoinBtn {
+    padding: 12px 24px;
+    background: #1c2740;
+    color: var(--text);
+    font-size: 0.95rem;
+  }
+  #flipCoinBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .coin-result {
+    margin-top: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    min-height: 1.3em;
+    text-align: center;
+  }
+
   /* --- Scoreboard screen --- */
   #board {
     display: flex;

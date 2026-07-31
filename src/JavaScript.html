@@ -102,6 +102,33 @@
     document.getElementById('firstServeTeam2').textContent = this.value || 'Team B';
   });
 
+  var coinRotation = 0;
+  document.getElementById('flipCoinBtn').addEventListener('click', flipCoin);
+
+  function flipCoin() {
+    var btn = document.getElementById('flipCoinBtn');
+    var coin = document.getElementById('coin');
+    var resultEl = document.getElementById('coinResult');
+
+    btn.disabled = true;
+    resultEl.textContent = 'Flipping…';
+
+    var result = Math.random() < 0.5 ? 1 : 2;
+    var extraSpins = 4 + Math.floor(Math.random() * 3); // 4-6 full spins for effect
+    var currentMod = ((coinRotation % 360) + 360) % 360;
+    var desiredMod = result === 2 ? 180 : 0;
+    var delta = ((desiredMod - currentMod) + 360) % 360;
+    coinRotation += extraSpins * 360 + delta;
+    coin.style.transform = 'rotateY(' + coinRotation + 'deg)';
+
+    setTimeout(function () {
+      var winnerName = document.getElementById('firstServeTeam' + result).textContent;
+      resultEl.textContent = '🎉 ' + winnerName + ' won the toss — serves first!';
+      setFirstServeTeam(result);
+      btn.disabled = false;
+    }, 1650);
+  }
+
   function setFirstServeTeam(teamNum) {
     firstServeTeam = teamNum;
     document.getElementById('firstServeTeam1').classList.toggle('active', teamNum === 1);
