@@ -134,6 +134,61 @@ function resetMatch() {
   return null;
 }
 
+/**
+ * Ends the match early. If the current game has points on the board with
+ * a clear leader, it's logged as a final (possibly short) game first.
+ * Winner is whichever side has won more games; if games are tied and the
+ * current game is also tied, the match cannot be auto-resolved and the
+ * state is left untouched (matchWinner stays null).
+ */
+function endMatch() {
+  var state = getState();
+  if (!state || state.matchWinner) return state;
+
+  pushUndoSnapshot_(state);
+
+  var cur = state.current;
+  if (cur.team1Score > 0 || cur.team2Score > 0) {
+    var gameWinner = cur.team1Score === cur.team2Score ? null : (cur.team1Score > cur.team2Score ? 1 : 2);
+    if (gameWinner) {
+      state.games.push({ team1Score: cur.team1Score, team2Score: cur.team2Score, winner: gameWinner });
+      logGameToSheet_(state, state.games.length, cur, gameWinner);
+    }
+  }
+
+  var team1Wins = state.games.filter(function (g) { return g.winner === 1; }).length;
+  var team2Wins = state.games.filter(function (g) { return g.winner === 2; }).length;
+
+  if (team1Wins === team2Wins) {
+    state.history.pop(); // can't resolve a winner — cancel the snapshot, leave state as-is
+    return state;
+  }
+
+  state.matchWinner = team1Wins > team2Wins ? 1 : 2;
+  saveState_(state);
+  return state;
+}
+
+/** Returns all logged games from the MatchHistory sheet, most recent first. */
+function getMatchHistory() {
+  var sheet = ensureSheet_();
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return [];
+
+  var rows = sheet.getRange(2, 1, lastRow - 1, 7).getValues();
+  return rows.map(function (r) {
+    return {
+      date: Utilities.formatDate(new Date(r[0]), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm'),
+      team1: r[1],
+      team2: r[2],
+      gameNumber: r[3],
+      team1Score: r[4],
+      team2Score: r[5],
+      winner: r[6]
+    };
+  }).reverse();
+}
+
 function ensureSheet_() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName(HISTORY_SHEET_NAME);

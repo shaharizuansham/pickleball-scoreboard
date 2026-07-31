@@ -23,6 +23,83 @@
 
   .hidden { display: none !important; }
 
+  /* --- Tab bar --- */
+  .tabbar {
+    display: flex;
+    background: var(--panel);
+    border-bottom: 1px solid #1c2740;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 12px 8px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 0.85rem;
+    border-radius: 0;
+    border-bottom: 3px solid transparent;
+  }
+  .tab-btn.active { color: var(--text); border-bottom-color: var(--green); }
+
+  .tab-view { min-height: calc(100vh - 46px); }
+
+  .page-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 20px;
+    line-height: 1.55;
+  }
+  .page-inner h2 { margin-top: 0; }
+  .page-inner h3 { margin-top: 28px; color: var(--team1); }
+  .page-inner ul { padding-left: 20px; }
+  .page-inner li { margin-bottom: 10px; }
+  .page-inner a { color: var(--team1); }
+  .page-inner code {
+    background: #1c2740;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+
+  .glossary { border-collapse: collapse; width: 100%; margin-top: 8px; }
+  .glossary td { padding: 8px 10px; border-bottom: 1px solid #1c2740; vertical-align: top; }
+  .glossary td:first-child { color: var(--team2); white-space: nowrap; }
+
+  .court-diagram { width: 100%; height: auto; margin-top: 12px; }
+  .court-label { fill: var(--text); font-size: 11px; font-family: inherit; }
+  .court-label.small { fill: var(--muted); font-size: 8px; letter-spacing: 0.5px; }
+  .court-label.dim { fill: var(--muted); font-size: 10px; }
+
+  /* --- History tab --- */
+  #refreshHistoryBtn {
+    padding: 10px 16px;
+    background: #1c2740;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  .history-table { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
+  .history-table th, .history-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #1c2740;
+    text-align: left;
+    white-space: nowrap;
+  }
+  .history-table th { color: var(--muted); font-weight: 600; }
+  .history-table-wrap { overflow-x: auto; }
+  .history-empty { color: var(--muted); padding: 20px 0; text-align: center; }
+
+  /* --- In-match game history list --- */
+  .game-history {
+    padding: 8px 16px;
+    color: var(--muted);
+    font-size: 0.85rem;
+    text-align: center;
+  }
+  .game-history .entry { margin: 2px 0; }
+  .game-history .entry b { color: var(--text); }
+
   /* --- Setup screen --- */
   #setup {
     max-width: 520px;

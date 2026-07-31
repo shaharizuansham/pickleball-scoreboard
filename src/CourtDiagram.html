@@ -1,0 +1,45 @@
+<svg class="court-diagram" viewBox="0 0 500 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pickleball court diagram">
+  <!-- Outer court boundary: 44 ft (length) x 20 ft (width), 10px per ft, offset (30,30) -->
+  <rect x="30" y="30" width="440" height="200" fill="none" stroke="#f5f7fa" stroke-width="3"/>
+
+  <!-- Non-volley zones (kitchen), 7 ft each side of net -->
+  <rect x="100" y="30" width="70" height="200" fill="#22d3ee" fill-opacity="0.12"/>
+  <rect x="330" y="30" width="70" height="200" fill="#f97316" fill-opacity="0.12"/>
+  <line x1="100" y1="30" x2="100" y2="230" stroke="#f5f7fa" stroke-width="2"/>
+  <line x1="170" y1="30" x2="170" y2="230" stroke="#f5f7fa" stroke-width="2" stroke-dasharray="4 3"/>
+  <line x1="330" y1="30" x2="330" y2="230" stroke="#f5f7fa" stroke-width="2" stroke-dasharray="4 3"/>
+  <line x1="400" y1="30" x2="400" y2="230" stroke="#f5f7fa" stroke-width="2"/>
+
+  <!-- Net -->
+  <line x1="250" y1="26" x2="250" y2="234" stroke="#f5f7fa" stroke-width="5"/>
+  <text x="250" y="18" text-anchor="middle" class="court-label">NET</text>
+
+  <!-- Center service lines (baseline to non-volley line, each side) -->
+  <line x1="30" y1="130" x2="100" y2="130" stroke="#f5f7fa" stroke-width="2"/>
+  <line x1="400" y1="130" x2="470" y2="130" stroke="#f5f7fa" stroke-width="2"/>
+
+  <!-- Kitchen labels -->
+  <text x="135" y="132" text-anchor="middle" class="court-label small" transform="rotate(-90 135 132)">NON-VOLLEY ZONE (KITCHEN)</text>
+  <text x="365" y="132" text-anchor="middle" class="court-label small" transform="rotate(-90 365 132)">NON-VOLLEY ZONE (KITCHEN)</text>
+
+  <!-- Service court labels -->
+  <text x="65" y="85" text-anchor="middle" class="court-label small">LEFT<tspan x="65" dy="12">SERVICE COURT</tspan></text>
+  <text x="65" y="185" text-anchor="middle" class="court-label small">RIGHT<tspan x="65" dy="12">SERVICE COURT</tspan></text>
+  <text x="435" y="85" text-anchor="middle" class="court-label small">RIGHT<tspan x="435" dy="12">SERVICE COURT</tspan></text>
+  <text x="435" y="185" text-anchor="middle" class="court-label small">LEFT<tspan x="435" dy="12">SERVICE COURT</tspan></text>
+
+  <!-- Baseline labels -->
+  <text x="30" y="245" text-anchor="start" class="court-label small">BASELINE</text>
+  <text x="470" y="245" text-anchor="end" class="court-label small">BASELINE</text>
+
+  <!-- Dimension: 44 ft length -->
+  <line x1="30" y1="255" x2="470" y2="255" stroke="#8b97ab" stroke-width="1"/>
+  <text x="250" y="252" text-anchor="middle" class="court-label dim">44 ft</text>
+
+  <!-- Dimension: 20 ft width -->
+  <line x1="15" y1="30" x2="15" y2="230" stroke="#8b97ab" stroke-width="1"/>
+  <text x="15" y="130" text-anchor="middle" class="court-label dim" transform="rotate(-90 15 130)">20 ft</text>
+
+  <!-- Dimension: 7 ft kitchen -->
+  <text x="135" y="245" text-anchor="middle" class="court-label dim">7 ft</text>
+</svg>

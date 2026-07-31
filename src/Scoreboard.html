@@ -6,88 +6,150 @@
 </head>
 <body>
 
-  <div id="setup">
-    <h1>🏓 Pickleball Scoreboard</h1>
-    <p class="sub">Doubles &middot; traditional side-out scoring</p>
+  <nav class="tabbar">
+    <button class="tab-btn active" data-tab="scoreboard" type="button">🏓 Scoreboard</button>
+    <button class="tab-btn" data-tab="history" type="button">📜 History</button>
+    <button class="tab-btn" data-tab="about" type="button">ℹ️ About &amp; Rules</button>
+  </nav>
 
-    <div class="team-form team1">
-      <label>Team A name</label>
-      <input id="t1name" value="Team A">
+  <div id="tab-scoreboard" class="tab-view">
+
+    <div id="setup">
+      <h1>🏓 Pickleball Scoreboard</h1>
+      <p class="sub">Doubles &middot; traditional side-out scoring</p>
+
+      <div class="team-form team1">
+        <label>Team A name</label>
+        <input id="t1name" value="Team A">
+        <div class="row">
+          <div><label>Player 1</label><input id="t1p1" placeholder="Player 1"></div>
+          <div><label>Player 2</label><input id="t1p2" placeholder="Player 2"></div>
+        </div>
+      </div>
+
+      <div class="team-form team2">
+        <label>Team B name</label>
+        <input id="t2name" value="Team B">
+        <div class="row">
+          <div><label>Player 1</label><input id="t2p1" placeholder="Player 1"></div>
+          <div><label>Player 2</label><input id="t2p2" placeholder="Player 2"></div>
+        </div>
+      </div>
+
       <div class="row">
-        <div><label>Player 1</label><input id="t1p1" placeholder="Player 1"></div>
-        <div><label>Player 2</label><input id="t1p2" placeholder="Player 2"></div>
+        <div>
+          <label>Best of</label>
+          <select id="bestOf">
+            <option value="1">1 game</option>
+            <option value="3" selected>3 games</option>
+            <option value="5">5 games</option>
+          </select>
+        </div>
+        <div>
+          <label>Win score</label>
+          <select id="winScore">
+            <option value="11" selected>11</option>
+            <option value="15">15</option>
+            <option value="21">21</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="startBtn">Start Match</button>
+    </div>
+
+    <div id="board" class="hidden">
+      <div class="status-bar" id="statusBar"></div>
+      <div class="legend">Score shown as <b>points</b> for the receiving side, and <b>points-server#</b> (e.g. "2-2") for the side currently serving &mdash; the digit after the dash is server 1 or 2, not a second score. "Serving: [name]" under the green dot shows exactly who's up.</div>
+      <div id="gameOverBanner" class="game-over-banner hidden"></div>
+      <div id="matchOverBanner" class="match-over-banner hidden"></div>
+
+      <div class="score-row">
+        <div class="side team1" id="side1">
+          <div class="name" id="name1"></div>
+          <div class="players" id="players1"></div>
+          <div class="score" id="score1">0</div>
+          <div class="serve-dot" id="serve1"></div>
+          <div class="serving-label" id="servingLabel1"></div>
+          <div class="score-buttons">
+            <button class="score-btn minus" id="minus1" type="button">&minus;</button>
+            <button class="score-btn plus" id="plus1" type="button">+1</button>
+          </div>
+          <div class="games-tally" id="tally1"></div>
+        </div>
+        <div class="divider"></div>
+        <div class="side team2" id="side2">
+          <div class="name" id="name2"></div>
+          <div class="players" id="players2"></div>
+          <div class="score" id="score2">0</div>
+          <div class="serve-dot" id="serve2"></div>
+          <div class="serving-label" id="servingLabel2"></div>
+          <div class="score-buttons">
+            <button class="score-btn minus" id="minus2" type="button">&minus;</button>
+            <button class="score-btn plus" id="plus2" type="button">+1</button>
+          </div>
+          <div class="games-tally" id="tally2"></div>
+        </div>
+      </div>
+
+      <div class="game-history" id="gameHistory"></div>
+
+      <div class="controls">
+        <button id="undoBtn">Undo</button>
+        <button id="newGameBtn" class="primary hidden">Start Next Game</button>
+        <button id="endMatchBtn" class="danger">End Match</button>
+        <button id="resetBtn" class="danger">Reset Match</button>
       </div>
     </div>
 
-    <div class="team-form team2">
-      <label>Team B name</label>
-      <input id="t2name" value="Team B">
-      <div class="row">
-        <div><label>Player 1</label><input id="t2p1" placeholder="Player 1"></div>
-        <div><label>Player 2</label><input id="t2p2" placeholder="Player 2"></div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div>
-        <label>Best of</label>
-        <select id="bestOf">
-          <option value="1">1 game</option>
-          <option value="3" selected>3 games</option>
-          <option value="5">5 games</option>
-        </select>
-      </div>
-      <div>
-        <label>Win score</label>
-        <select id="winScore">
-          <option value="11" selected>11</option>
-          <option value="15">15</option>
-          <option value="21">21</option>
-        </select>
-      </div>
-    </div>
-
-    <button id="startBtn">Start Match</button>
   </div>
 
-  <div id="board" class="hidden">
-    <div class="status-bar" id="statusBar"></div>
-    <div class="legend">Score shown as <b>points</b> for the receiving side, and <b>points-server#</b> (e.g. "2-2") for the side currently serving &mdash; the digit after the dash is server 1 or 2, not a second score. "Serving: [name]" under the green dot shows exactly who's up.</div>
-    <div id="gameOverBanner" class="game-over-banner hidden"></div>
-    <div id="matchOverBanner" class="match-over-banner hidden"></div>
-
-    <div class="score-row">
-      <div class="side team1" id="side1">
-        <div class="name" id="name1"></div>
-        <div class="players" id="players1"></div>
-        <div class="score" id="score1">0</div>
-        <div class="serve-dot" id="serve1"></div>
-        <div class="serving-label" id="servingLabel1"></div>
-        <div class="score-buttons">
-          <button class="score-btn minus" id="minus1" type="button">&minus;</button>
-          <button class="score-btn plus" id="plus1" type="button">+1</button>
-        </div>
-        <div class="games-tally" id="tally1"></div>
-      </div>
-      <div class="divider"></div>
-      <div class="side team2" id="side2">
-        <div class="name" id="name2"></div>
-        <div class="players" id="players2"></div>
-        <div class="score" id="score2">0</div>
-        <div class="serve-dot" id="serve2"></div>
-        <div class="serving-label" id="servingLabel2"></div>
-        <div class="score-buttons">
-          <button class="score-btn minus" id="minus2" type="button">&minus;</button>
-          <button class="score-btn plus" id="plus2" type="button">+1</button>
-        </div>
-        <div class="games-tally" id="tally2"></div>
-      </div>
+  <div id="tab-history" class="tab-view hidden">
+    <div class="page-inner">
+      <h2>📜 Match History</h2>
+      <p class="sub">Every completed game, logged automatically to the <code>MatchHistory</code> sheet.</p>
+      <button id="refreshHistoryBtn" type="button">Refresh</button>
+      <div id="historyTableWrap"></div>
     </div>
+  </div>
 
-    <div class="controls">
-      <button id="undoBtn">Undo</button>
-      <button id="newGameBtn" class="primary hidden">Start Next Game</button>
-      <button id="resetBtn" class="danger">Reset Match</button>
+  <div id="tab-about" class="tab-view hidden">
+    <div class="page-inner">
+      <h2>ℹ️ About Pickleball</h2>
+      <p>
+        Pickleball is a paddle sport that blends elements of tennis, badminton, and
+        table tennis. It's played on a small court with a perforated plastic ball
+        and solid paddles, either as <b>singles</b> (1 vs 1) or <b>doubles</b> (2 vs 2 &mdash;
+        what this scoreboard is built for).
+      </p>
+
+      <h3>Court Layout</h3>
+      <?!= include('CourtDiagram'); ?>
+
+      <h3>Key Rules</h3>
+      <ul>
+        <li><b>Serve:</b> Underhand, diagonally cross-court, from behind the baseline. The ball must clear the net and land in the opponent's diagonal service court, beyond the non-volley zone.</li>
+        <li><b>Two-bounce rule:</b> After the serve, the receiving side must let the ball bounce once before returning it, and the serving side must also let that return bounce once before volleying &mdash; each side gets one groundstroke before volleys are allowed.</li>
+        <li><b>Non-volley zone ("the kitchen"):</b> The 7 ft zone on each side of the net. Players cannot volley (hit the ball out of the air) while standing inside it, or if their momentum carries them in immediately after.</li>
+        <li><b>Scoring (traditional side-out, doubles):</b> Only the serving team can score. Each doubles team gets two servers per turn, except the very first serve of each game (only one server before the first side-out). Games are usually to 11, win by 2.</li>
+        <li><b>Side-out:</b> When the serving team loses a rally on their second server (or their only server at the game's first turn), the serve passes to the other team.</li>
+        <li><b>Faults:</b> Hitting the ball out of bounds or into the net, volleying from the kitchen, or serving illegally all end the rally as a fault.</li>
+      </ul>
+
+      <h3>Glossary</h3>
+      <table class="glossary">
+        <tr><td><b>Kitchen</b></td><td>Nickname for the non-volley zone.</td></tr>
+        <tr><td><b>Dink</b></td><td>A soft, arcing shot hit from near the kitchen line into the opponent's kitchen.</td></tr>
+        <tr><td><b>Side-out</b></td><td>Loss of serve from one team/side to the other.</td></tr>
+        <tr><td><b>Rally</b></td><td>The continuous exchange of shots until a fault ends the point.</td></tr>
+        <tr><td><b>Erne</b></td><td>An advanced shot where a player jumps around the kitchen (outside the court) to volley near the net.</td></tr>
+      </table>
+
+      <p class="sub">
+        Rules summarized for quick reference &mdash; always defer to the current
+        <a href="https://usapickleball.org/what-is-pickleball/official-rules/" target="_blank" rel="noopener">official USA Pickleball rulebook</a>
+        for tournament play.
+      </p>
     </div>
   </div>
 

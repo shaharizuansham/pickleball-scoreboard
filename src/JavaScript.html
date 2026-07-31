@@ -3,6 +3,45 @@
   var lastAcknowledgedGameCount = 0;
   var lastState = null;
 
+  document.querySelectorAll('.tab-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () { switchTab(btn.dataset.tab); });
+  });
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(function (b) {
+      b.classList.toggle('active', b.dataset.tab === tab);
+    });
+    document.querySelectorAll('.tab-view').forEach(function (v) {
+      v.classList.toggle('hidden', v.id !== 'tab-' + tab);
+    });
+    if (tab === 'history') loadHistory();
+  }
+
+  document.getElementById('refreshHistoryBtn').addEventListener('click', loadHistory);
+
+  function loadHistory() {
+    var wrap = document.getElementById('historyTableWrap');
+    wrap.innerHTML = '<div class="history-empty">Loading…</div>';
+    google.script.run.withSuccessHandler(renderHistory).withFailureHandler(onError).getMatchHistory();
+  }
+
+  function renderHistory(rows) {
+    var wrap = document.getElementById('historyTableWrap');
+    if (!rows || rows.length === 0) {
+      wrap.innerHTML = '<div class="history-empty">No completed games logged yet.</div>';
+      return;
+    }
+    var html = '<div class="history-table-wrap"><table class="history-table"><thead><tr>' +
+      '<th>Date</th><th>Team A</th><th>Team B</th><th>Game #</th><th>Score</th><th>Winner</th>' +
+      '</tr></thead><tbody>';
+    rows.forEach(function (r) {
+      html += '<tr><td>' + r.date + '</td><td>' + r.team1 + '</td><td>' + r.team2 + '</td><td>' +
+        r.gameNumber + '</td><td>' + r.team1Score + '-' + r.team2Score + '</td><td>' + r.winner + '</td></tr>';
+    });
+    html += '</tbody></table></div>';
+    wrap.innerHTML = html;
+  }
+
   document.getElementById('startBtn').addEventListener('click', function () {
     var team1 = {
       name: document.getElementById('t1name').value || 'Team A',
@@ -45,6 +84,16 @@
   document.getElementById('resetBtn').addEventListener('click', function () {
     if (!confirm('Reset the whole match? This clears the current scoreboard.')) return;
     google.script.run.withSuccessHandler(render).withFailureHandler(onError).resetMatch();
+  });
+
+  document.getElementById('endMatchBtn').addEventListener('click', function () {
+    if (!confirm('End the match now? The winner will be whichever side has won more games (ties broken by the current game\'s score, if any points were played).')) return;
+    google.script.run.withSuccessHandler(function (state) {
+      render(state);
+      if (state && !state.matchWinner) {
+        alert('Games (and the current game) are tied — cannot auto-determine a winner. Keep playing or use +1/Undo to break the tie first.');
+      }
+    }).withFailureHandler(onError).endMatch();
   });
 
   function awardRally(side) {
@@ -141,6 +190,25 @@
     document.getElementById('minus2').disabled = noHistory;
     document.getElementById('plus1').disabled = awaitingNextGame || !!state.matchWinner;
     document.getElementById('plus2').disabled = awaitingNextGame || !!state.matchWinner;
+
+    var endMatchBtn = document.getElementById('endMatchBtn');
+    endMatchBtn.classList.toggle('hidden', !!state.matchWinner);
+    endMatchBtn.disabled = !!state.matchWinner;
+
+    renderGameHistory(state);
+  }
+
+  function renderGameHistory(state) {
+    var el = document.getElementById('gameHistory');
+    if (!state.games.length) {
+      el.innerHTML = '';
+      return;
+    }
+    el.innerHTML = state.games.map(function (g, i) {
+      var winnerName = g.winner === 1 ? state.team1.name : state.team2.name;
+      return '<div class="entry">Game ' + (i + 1) + ': <b>' + g.team1Score + '-' + g.team2Score +
+        '</b> &mdash; ' + winnerName + ' won</div>';
+    }).join('');
   }
 
   function setServingLabel(elId, team, cur, teamNum) {

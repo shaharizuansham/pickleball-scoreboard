@@ -26,7 +26,8 @@ Traditional side-out scoring (not rally scoring):
 src/
 ├── appsscript.json   — Apps Script manifest (web app config)
 ├── Code.gs            — server-side match engine + Sheet logging
-├── Scoreboard.html    — page markup
+├── Scoreboard.html    — page markup (Scoreboard / History / About tabs)
+├── CourtDiagram.html  — inline SVG court layout, shown on the About tab
 ├── Stylesheet.html    — dark, high-contrast scoreboard theme
 └── JavaScript.html    — client-side controller
 ```
@@ -57,15 +58,35 @@ src/
 
 ## Using it
 
+The app has three tabs: **Scoreboard**, **History**, and **About & Rules**.
+
+### Scoreboard tab
 1. Enter both teams' names and player names, pick best-of and win score,
    tap **Start Match**.
-2. Tap the **left or right half of the screen** whenever that side wins a
-   rally. The score, server dot, and server number update automatically.
-3. **Undo** reverts the last rally (or the last game completion).
-4. When a game ends, tap **Start Next Game** to continue the match.
-5. **Reset Match** clears the board to start over.
-6. Check the `MatchHistory` tab in the spreadsheet for a log of every
-   completed game (date, teams, per-game scores, winner).
+2. Tap **+1** on whichever side wins a rally. The score, serve dot, server
+   number, and "Serving: [name]" label update automatically. Score is shown
+   as `points` for the receiving side and `points-server#` for the serving
+   side (e.g. "2-2" = 2 points, server #2).
+3. **−** (or the **Undo** button) reverts the last point awarded, or the
+   last game completion.
+4. A running list of completed games for the current match is shown below
+   the score.
+5. When a game ends, tap **Start Next Game** to continue the match.
+6. **End Match** finishes the match early — winner is whichever side has
+   won more games (ties are broken by the current game's score, if any
+   points were played; if everything is still tied it won't auto-resolve).
+7. **Reset Match** clears the board to start over.
+
+### History tab
+Shows every completed game ever logged, pulled live from the `MatchHistory`
+sheet — date, teams, game number, score, winner. Tap **Refresh** to pull
+the latest.
+
+### About & Rules tab
+A quick-reference page covering what pickleball is, an SVG court layout
+(net, non-volley zone/kitchen, service courts, baselines), key rules, and
+a short glossary — handy for anyone new to the sport who's helping keep
+score.
 
 ## Notes
 
