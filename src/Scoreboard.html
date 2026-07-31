@@ -55,6 +55,13 @@
         </div>
       </div>
 
+      <label>Scoring style</label>
+      <div class="serve-choice">
+        <button class="serve-choice-btn team1 active" id="modeSideout" type="button" data-mode="sideout">Side-out (traditional)</button>
+        <button class="serve-choice-btn team2" id="modeRally" type="button" data-mode="rally">Rally (badminton-style)</button>
+      </div>
+      <p class="sub small" id="modeExplain">Only the serving side can score. Doubles gets two servers per turn.</p>
+
       <label>Who serves first?</label>
 
       <div class="coin-toss">
@@ -78,7 +85,7 @@
     <div id="board" class="hidden">
       <div class="status-bar" id="statusBar"></div>
       <div class="match-timer" id="matchTimer">⏱ 0:00</div>
-      <div class="legend">Score shown as <b>points</b> for the receiving side, and <b>points-server#</b> (e.g. "2-2") for the side currently serving &mdash; the digit after the dash is server 1 or 2, not a second score. "Serving: [name]" under the green dot shows exactly who's up.</div>
+      <div class="legend" id="scoreLegend"></div>
       <div id="gameOverBanner" class="game-over-banner hidden"></div>
       <div id="matchOverBanner" class="match-over-banner hidden"></div>
 
@@ -156,6 +163,7 @@
         <li><b>Two-bounce rule:</b> After the serve, the receiving side must let the ball bounce once before returning it, and the serving side must also let that return bounce once before volleying &mdash; each side gets one groundstroke before volleys are allowed.</li>
         <li><b>Non-volley zone ("the kitchen"):</b> The 7 ft zone on each side of the net. Players cannot volley (hit the ball out of the air) while standing inside it, or if their momentum carries them in immediately after.</li>
         <li><b>Scoring (traditional side-out, doubles):</b> Only the serving team can score. Each doubles team gets two servers per turn, except the very first serve of each game (only one server before the first side-out). Games are usually to 11, win by 2.</li>
+        <li><b>Rally scoring (alternative, provisional as of 2026):</b> Every rally scores a point for whoever wins it, regardless of who served &mdash; the same style badminton uses. This app lets you pick either mode when starting a match.</li>
         <li><b>Side-out:</b> When the serving team loses a rally on their second server (or their only server at the game's first turn), the serve passes to the other team.</li>
         <li><b>Faults:</b> Hitting the ball out of bounds or into the net, volleying from the kitchen, or serving illegally all end the rally as a fault.</li>
       </ul>

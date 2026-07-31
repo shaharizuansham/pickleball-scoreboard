@@ -81,14 +81,29 @@
       return;
     }
     var html = '<div class="history-table-wrap"><table class="history-table"><thead><tr>' +
-      '<th>Started</th><th>Ended</th><th>Duration</th><th>Team A</th><th>Team B</th><th>Games</th><th>Winner</th>' +
+      '<th>Started</th><th>Ended</th><th>Duration</th><th>Team A</th><th>Team B</th><th>Games</th><th>Winner</th><th>Mode</th>' +
       '</tr></thead><tbody>';
     rows.forEach(function (r) {
       html += '<tr><td>' + r.started + '</td><td>' + r.ended + '</td><td>' + r.duration + '</td><td>' +
-        r.team1 + '</td><td>' + r.team2 + '</td><td>' + r.gamesWon + '</td><td>' + r.winner + '</td></tr>';
+        r.team1 + '</td><td>' + r.team2 + '</td><td>' + r.gamesWon + '</td><td>' + r.winner + '</td><td>' + (r.scoringMode || '') + '</td></tr>';
     });
     html += '</tbody></table></div>';
     wrap.innerHTML = html;
+  }
+
+  var scoringMode = 'sideout';
+  var MODE_EXPLAIN = {
+    sideout: 'Only the serving side can score. Doubles gets two servers per turn.',
+    rally: 'Every rally scores a point for whoever wins it, regardless of who served (badminton-style).'
+  };
+  document.getElementById('modeSideout').addEventListener('click', function () { setScoringMode('sideout'); });
+  document.getElementById('modeRally').addEventListener('click', function () { setScoringMode('rally'); });
+
+  function setScoringMode(mode) {
+    scoringMode = mode;
+    document.getElementById('modeSideout').classList.toggle('active', mode === 'sideout');
+    document.getElementById('modeRally').classList.toggle('active', mode === 'rally');
+    document.getElementById('modeExplain').textContent = MODE_EXPLAIN[mode];
   }
 
   var firstServeTeam = 1;
@@ -155,7 +170,7 @@
         render(state);
       })
       .withFailureHandler(onError)
-      .startMatch(team1, team2, bestOf, winScore, firstServeTeam);
+      .startMatch(team1, team2, bestOf, winScore, firstServeTeam, scoringMode);
   });
 
   document.getElementById('plus1').addEventListener('click', function () { awardRally('team1'); });
@@ -227,9 +242,14 @@
     document.getElementById('players2').textContent = state.team2.players.filter(Boolean).join(' / ');
 
     var cur = state.current;
-    var scoreSuffix = '-' + cur.serverNumber;
-    document.getElementById('score1').textContent = cur.team1Score + (cur.servingTeam === 1 ? scoreSuffix : '');
-    document.getElementById('score2').textContent = cur.team2Score + (cur.servingTeam === 2 ? scoreSuffix : '');
+    var isRally = state.scoringMode === 'rally';
+    var scoreSuffix = isRally ? '' : ('-' + cur.serverNumber);
+    document.getElementById('score1').textContent = cur.team1Score + (!isRally && cur.servingTeam === 1 ? scoreSuffix : '');
+    document.getElementById('score2').textContent = cur.team2Score + (!isRally && cur.servingTeam === 2 ? scoreSuffix : '');
+
+    document.getElementById('scoreLegend').innerHTML = isRally
+      ? 'Rally scoring: every rally is a point for whoever wins it, regardless of who served. "Serving: [name]" under the green dot shows who\'s serving next.'
+      : 'Score shown as <b>points</b> for the receiving side, and <b>points-server#</b> (e.g. "2-2") for the side currently serving &mdash; the digit after the dash is server 1 or 2, not a second score. "Serving: [name]" under the green dot shows exactly who\'s up.';
 
     document.getElementById('serve1').classList.toggle('active', cur.servingTeam === 1);
     document.getElementById('serve2').classList.toggle('active', cur.servingTeam === 2);

@@ -43,16 +43,19 @@ function pushUndoSnapshot_(state) {
 /**
  * Starts a new match. teamX = { name, players: [p1, p2] }.
  * bestOf: 1|3|5, winScore: 11|15|21. firstServeTeam: 1|2 (who serves first, e.g. coin toss winner).
+ * scoringMode: 'sideout' (traditional, default) | 'rally' (badminton-style — every rally scores).
  */
-function startMatch(team1, team2, bestOf, winScore, firstServeTeam) {
+function startMatch(team1, team2, bestOf, winScore, firstServeTeam, scoringMode) {
+  var mode = scoringMode === 'rally' ? 'rally' : 'sideout';
   var state = {
     team1: { name: team1.name || 'Team A', players: [team1.players[0] || 'Player 1', team1.players[1] || 'Player 2'] },
     team2: { name: team2.name || 'Team B', players: [team2.players[0] || 'Player 1', team2.players[1] || 'Player 2'] },
     bestOf: Number(bestOf) || 3,
     winScore: Number(winScore) || 11,
     winBy: 2,
+    scoringMode: mode,
     games: [],
-    current: freshGame_(Number(firstServeTeam) === 2 ? 2 : 1),
+    current: freshGame_(Number(firstServeTeam) === 2 ? 2 : 1, mode),
     history: [],
     matchWinner: null,
     matchStartTime: Date.now(),
@@ -63,19 +66,21 @@ function startMatch(team1, team2, bestOf, winScore, firstServeTeam) {
   return state;
 }
 
-function freshGame_(servingTeam) {
+function freshGame_(servingTeam, mode) {
   return {
     team1Score: 0,
     team2Score: 0,
     servingTeam: servingTeam,
-    serverNumber: 2, // only one server before the first side-out of a game
+    // In side-out mode, only one server before the first side-out of a game.
+    // In rally mode there's no two-server rule, so this is always 1.
+    serverNumber: mode === 'rally' ? 1 : 2,
     firstServiceOfGame: true
   };
 }
 
 /**
  * Operator taps which side won the rally: 'team1' or 'team2'.
- * Applies side-out scoring rules and returns the updated state.
+ * Applies the match's scoring rules (side-out or rally) and returns the updated state.
  */
 function awardRally(side) {
   var state = getState();
@@ -86,7 +91,11 @@ function awardRally(side) {
   var cur = state.current;
   var winningTeam = side === 'team1' ? 1 : 2;
 
-  if (winningTeam === cur.servingTeam) {
+  if (state.scoringMode === 'rally') {
+    if (winningTeam === 1) cur.team1Score++; else cur.team2Score++;
+    cur.servingTeam = winningTeam; // winner serves next, badminton-style
+    cur.serverNumber = 1;
+  } else if (winningTeam === cur.servingTeam) {
     if (cur.servingTeam === 1) cur.team1Score++; else cur.team2Score++;
   } else if (cur.serverNumber === 1 && !cur.firstServiceOfGame) {
     cur.serverNumber = 2;
@@ -109,7 +118,7 @@ function awardRally(side) {
       finalizeMatchWin_(state, team1Wins >= gamesToWin ? 1 : 2);
     } else {
       // Loser of the game serves first in the next game.
-      state.current = freshGame_(winner === 1 ? 2 : 1);
+      state.current = freshGame_(winner === 1 ? 2 : 1, state.scoringMode);
     }
   }
 
@@ -207,7 +216,7 @@ function getMatchSummaries() {
   var lastRow = sheet.getLastRow();
   if (lastRow < 2) return [];
 
-  var rows = sheet.getRange(2, 1, lastRow - 1, 7).getValues();
+  var rows = sheet.getRange(2, 1, lastRow - 1, 8).getValues();
   return rows.map(function (r) {
     return {
       started: Utilities.formatDate(new Date(r[0]), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm'),
@@ -216,7 +225,8 @@ function getMatchSummaries() {
       team1: r[3],
       team2: r[4],
       gamesWon: r[5],
-      winner: r[6]
+      winner: r[6],
+      scoringMode: r[7]
     };
   }).reverse();
 }
@@ -251,7 +261,7 @@ function ensureMatchesSheet_() {
   var sheet = ss.getSheetByName(MATCHES_SHEET_NAME);
   if (!sheet) {
     sheet = ss.insertSheet(MATCHES_SHEET_NAME);
-    sheet.appendRow(['Started', 'Ended', 'Duration', 'Team1', 'Team2', 'Games Won', 'Winner']);
+    sheet.appendRow(['Started', 'Ended', 'Duration', 'Team1', 'Team2', 'Games Won', 'Winner', 'Scoring Mode']);
     sheet.setFrozenRows(1);
   }
   return sheet;
@@ -269,7 +279,8 @@ function logMatchSummaryToSheet_(state) {
     state.team1.name,
     state.team2.name,
     team1Wins + '-' + team2Wins,
-    winnerName
+    winnerName,
+    state.scoringMode === 'rally' ? 'Rally' : 'Side-out'
   ]);
 }
 

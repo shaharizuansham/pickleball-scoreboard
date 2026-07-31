@@ -8,15 +8,24 @@ match (with start/end time and total duration) to a `Matches` tab.
 
 ## How scoring works
 
-Traditional side-out scoring (not rally scoring):
+Two selectable scoring modes, picked per match on the setup screen:
 
+**Side-out (traditional, default)**
 - Only the serving team can score a point.
 - Each doubles team gets **two servers** per turn, except the very first
   service of each game (only one server before the first side-out —
   the classic "0-0-2" start).
 - The operator just taps **which side won each rally** — the app works out
   serve rotation and side-outs for you.
-- Games are played to 11/15/21, win by 2. Either side can win the
+
+**Rally (badminton-style)**
+- Every rally scores a point for whoever wins it, regardless of who served.
+- The winner of each rally serves next.
+- This is the same scoring style badminton uses, and matches pickleball's
+  provisional 2026 rally-scoring format.
+
+Both modes share:
+- Games played to 11/15/21, win by 2. Either side can win the
   game-winning point (2026 rule).
 - Match is best of 1, 3, or 5 games; the loser of a game serves first in
   the next game.
@@ -79,12 +88,13 @@ UI): **Settings → Pages → Source: Deploy from a branch → Branch: `main`
 The app has three tabs: **Scoreboard**, **History**, and **About & Rules**.
 
 ### Scoreboard tab
-1. Enter both teams' names and player names, pick best-of and win score,
-   tap **Start Match**.
-2. Tap **+1** on whichever side wins a rally. The score, serve dot, server
-   number, and "Serving: [name]" label update automatically. Score is shown
-   as `points` for the receiving side and `points-server#` for the serving
-   side (e.g. "2-2" = 2 points, server #2).
+1. Enter both teams' names and player names, pick best-of, win score, and
+   **scoring style** (side-out or rally), tap **Start Match**.
+2. Tap **+1** on whichever side wins a rally. The score, serve dot, and
+   "Serving: [name]" label update automatically. In side-out mode, score is
+   shown as `points` for the receiving side and `points-server#` for the
+   serving side (e.g. "2-2" = 2 points, server #2); in rally mode it's just
+   the point totals.
 3. **−** (or the **Undo** button) reverts the last point awarded, or the
    last game completion.
 4. A live **match timer** runs from the moment you tap Start Match, and
@@ -101,7 +111,7 @@ The app has three tabs: **Scoreboard**, **History**, and **About & Rules**.
 ### History tab
 Two tables, both pulled live from the spreadsheet:
 - **Matches** — one row per completed match: start time, end time, total
-  duration, teams, games won, winner.
+  duration, teams, games won, winner, scoring mode used.
 - **Games** — every individual completed game: date, teams, game number,
   score, winner.
 
