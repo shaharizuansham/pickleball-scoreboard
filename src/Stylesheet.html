@@ -89,6 +89,14 @@
     font-size: 0.9rem;
   }
 
+  .legend {
+    text-align: center;
+    padding: 0 12px 10px;
+    color: var(--muted);
+    font-size: 0.78rem;
+  }
+  .legend b { color: var(--text); }
+
   .score-row {
     display: flex;
     flex: 1;
@@ -108,7 +116,6 @@
 
   .side.team1 { background: linear-gradient(180deg, #0b1220, #0d2430); }
   .side.team2 { background: linear-gradient(180deg, #0b1220, #2a1608); }
-  .side:active { filter: brightness(1.25); }
 
   .side .name { font-size: clamp(1.2rem, 4vw, 2rem); font-weight: 700; text-align: center; }
   .side.team1 .name { color: var(--team1); }

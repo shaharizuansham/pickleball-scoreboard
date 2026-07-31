@@ -26,13 +26,10 @@
       .startMatch(team1, team2, bestOf, winScore);
   });
 
-  document.getElementById('side1').addEventListener('click', function () { awardRally('team1'); });
-  document.getElementById('side2').addEventListener('click', function () { awardRally('team2'); });
-
-  document.getElementById('plus1').addEventListener('click', function (e) { e.stopPropagation(); awardRally('team1'); });
-  document.getElementById('plus2').addEventListener('click', function (e) { e.stopPropagation(); awardRally('team2'); });
-  document.getElementById('minus1').addEventListener('click', function (e) { e.stopPropagation(); runUndo(); });
-  document.getElementById('minus2').addEventListener('click', function (e) { e.stopPropagation(); runUndo(); });
+  document.getElementById('plus1').addEventListener('click', function () { awardRally('team1'); });
+  document.getElementById('plus2').addEventListener('click', function () { awardRally('team2'); });
+  document.getElementById('minus1').addEventListener('click', runUndo);
+  document.getElementById('minus2').addEventListener('click', runUndo);
 
   document.getElementById('undoBtn').addEventListener('click', runUndo);
 
