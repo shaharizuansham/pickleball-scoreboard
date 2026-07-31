@@ -7,6 +7,7 @@
 
 var STATE_KEY = 'PICKLEBALL_MATCH_STATE';
 var HISTORY_SHEET_NAME = 'MatchHistory';
+var MATCHES_SHEET_NAME = 'Matches';
 var MAX_UNDO = 20;
 
 function doGet(e) {
@@ -53,7 +54,10 @@ function startMatch(team1, team2, bestOf, winScore) {
     games: [],
     current: freshGame_(1),
     history: [],
-    matchWinner: null
+    matchWinner: null,
+    matchStartTime: Date.now(),
+    matchEndTime: null,
+    matchDurationMs: null
   };
   saveState_(state);
   return state;
@@ -102,7 +106,7 @@ function awardRally(side) {
     var team2Wins = state.games.filter(function (g) { return g.winner === 2; }).length;
 
     if (team1Wins >= gamesToWin || team2Wins >= gamesToWin) {
-      state.matchWinner = team1Wins >= gamesToWin ? 1 : 2;
+      finalizeMatchWin_(state, team1Wins >= gamesToWin ? 1 : 2);
     } else {
       // Loser of the game serves first in the next game.
       state.current = freshGame_(winner === 1 ? 2 : 1);
@@ -164,9 +168,17 @@ function endMatch() {
     return state;
   }
 
-  state.matchWinner = team1Wins > team2Wins ? 1 : 2;
-  saveState_(state);
+  finalizeMatchWin_(state, team1Wins > team2Wins ? 1 : 2);
   return state;
+}
+
+/** Sets the match winner, stamps end time/duration, logs the match summary, and saves. */
+function finalizeMatchWin_(state, winner) {
+  state.matchWinner = winner;
+  state.matchEndTime = Date.now();
+  state.matchDurationMs = state.matchEndTime - state.matchStartTime;
+  logMatchSummaryToSheet_(state);
+  saveState_(state);
 }
 
 /** Returns all logged games from the MatchHistory sheet, most recent first. */
@@ -184,6 +196,26 @@ function getMatchHistory() {
       gameNumber: r[3],
       team1Score: r[4],
       team2Score: r[5],
+      winner: r[6]
+    };
+  }).reverse();
+}
+
+/** Returns all logged match summaries from the Matches sheet, most recent first. */
+function getMatchSummaries() {
+  var sheet = ensureMatchesSheet_();
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return [];
+
+  var rows = sheet.getRange(2, 1, lastRow - 1, 7).getValues();
+  return rows.map(function (r) {
+    return {
+      started: Utilities.formatDate(new Date(r[0]), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm'),
+      ended: Utilities.formatDate(new Date(r[1]), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm'),
+      duration: r[2],
+      team1: r[3],
+      team2: r[4],
+      gamesWon: r[5],
       winner: r[6]
     };
   }).reverse();
@@ -212,4 +244,40 @@ function logGameToSheet_(state, gameNumber, cur, winner) {
     cur.team2Score,
     winnerName
   ]);
+}
+
+function ensureMatchesSheet_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(MATCHES_SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(MATCHES_SHEET_NAME);
+    sheet.appendRow(['Started', 'Ended', 'Duration', 'Team1', 'Team2', 'Games Won', 'Winner']);
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+
+function logMatchSummaryToSheet_(state) {
+  var sheet = ensureMatchesSheet_();
+  var winnerName = state.matchWinner === 1 ? state.team1.name : state.team2.name;
+  var team1Wins = state.games.filter(function (g) { return g.winner === 1; }).length;
+  var team2Wins = state.games.filter(function (g) { return g.winner === 2; }).length;
+  sheet.appendRow([
+    new Date(state.matchStartTime),
+    new Date(state.matchEndTime),
+    formatDuration_(state.matchDurationMs),
+    state.team1.name,
+    state.team2.name,
+    team1Wins + '-' + team2Wins,
+    winnerName
+  ]);
+}
+
+function formatDuration_(ms) {
+  var totalSec = Math.floor(ms / 1000);
+  var h = Math.floor(totalSec / 3600);
+  var m = Math.floor((totalSec % 3600) / 60);
+  var s = totalSec % 60;
+  var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+  return (h > 0 ? h + ':' + pad(m) : m) + ':' + pad(s);
 }

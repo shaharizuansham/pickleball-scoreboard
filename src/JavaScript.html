@@ -2,6 +2,35 @@
   var awaitingNextGame = false;
   var lastAcknowledgedGameCount = 0;
   var lastState = null;
+  var matchTimerHandle = null;
+
+  function formatDuration(ms) {
+    var totalSec = Math.floor(ms / 1000);
+    var h = Math.floor(totalSec / 3600);
+    var m = Math.floor((totalSec % 3600) / 60);
+    var s = totalSec % 60;
+    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+    return (h > 0 ? h + ':' + pad(m) : m) + ':' + pad(s);
+  }
+
+  function updateTimerDisplay(startTimeMs) {
+    var el = document.getElementById('matchTimer');
+    if (!el) return;
+    el.textContent = '⏱ ' + formatDuration(Date.now() - startTimeMs);
+  }
+
+  function startMatchTimer(startTimeMs) {
+    stopMatchTimer();
+    updateTimerDisplay(startTimeMs);
+    matchTimerHandle = setInterval(function () { updateTimerDisplay(startTimeMs); }, 1000);
+  }
+
+  function stopMatchTimer() {
+    if (matchTimerHandle) {
+      clearInterval(matchTimerHandle);
+      matchTimerHandle = null;
+    }
+  }
 
   document.querySelectorAll('.tab-btn').forEach(function (btn) {
     btn.addEventListener('click', function () { switchTab(btn.dataset.tab); });
@@ -20,9 +49,12 @@
   document.getElementById('refreshHistoryBtn').addEventListener('click', loadHistory);
 
   function loadHistory() {
-    var wrap = document.getElementById('historyTableWrap');
-    wrap.innerHTML = '<div class="history-empty">Loading…</div>';
+    var gamesWrap = document.getElementById('historyTableWrap');
+    var matchesWrap = document.getElementById('matchesTableWrap');
+    gamesWrap.innerHTML = '<div class="history-empty">Loading…</div>';
+    matchesWrap.innerHTML = '<div class="history-empty">Loading…</div>';
     google.script.run.withSuccessHandler(renderHistory).withFailureHandler(onError).getMatchHistory();
+    google.script.run.withSuccessHandler(renderMatchSummaries).withFailureHandler(onError).getMatchSummaries();
   }
 
   function renderHistory(rows) {
@@ -37,6 +69,23 @@
     rows.forEach(function (r) {
       html += '<tr><td>' + r.date + '</td><td>' + r.team1 + '</td><td>' + r.team2 + '</td><td>' +
         r.gameNumber + '</td><td>' + r.team1Score + '-' + r.team2Score + '</td><td>' + r.winner + '</td></tr>';
+    });
+    html += '</tbody></table></div>';
+    wrap.innerHTML = html;
+  }
+
+  function renderMatchSummaries(rows) {
+    var wrap = document.getElementById('matchesTableWrap');
+    if (!rows || rows.length === 0) {
+      wrap.innerHTML = '<div class="history-empty">No completed matches logged yet.</div>';
+      return;
+    }
+    var html = '<div class="history-table-wrap"><table class="history-table"><thead><tr>' +
+      '<th>Started</th><th>Ended</th><th>Duration</th><th>Team A</th><th>Team B</th><th>Games</th><th>Winner</th>' +
+      '</tr></thead><tbody>';
+    rows.forEach(function (r) {
+      html += '<tr><td>' + r.started + '</td><td>' + r.ended + '</td><td>' + r.duration + '</td><td>' +
+        r.team1 + '</td><td>' + r.team2 + '</td><td>' + r.gamesWon + '</td><td>' + r.winner + '</td></tr>';
     });
     html += '</tbody></table></div>';
     wrap.innerHTML = html;
@@ -117,6 +166,7 @@
 
     if (!state) {
       resetAcknowledgement();
+      stopMatchTimer();
       lastState = null;
       setup.classList.remove('hidden');
       board.classList.add('hidden');
@@ -164,8 +214,11 @@
 
     if (state.matchWinner) {
       awaitingNextGame = false;
+      stopMatchTimer();
+      var durationMs = state.matchDurationMs != null ? state.matchDurationMs : (Date.now() - state.matchStartTime);
+      document.getElementById('matchTimer').textContent = '⏱ ' + formatDuration(durationMs) + ' (final)';
       var winnerName = state.matchWinner === 1 ? state.team1.name : state.team2.name;
-      matchOverBanner.textContent = '🏆 ' + winnerName + ' wins the match!';
+      matchOverBanner.textContent = '🏆 ' + winnerName + ' wins the match! (' + formatDuration(durationMs) + ')';
       matchOverBanner.classList.remove('hidden');
       gameOverBanner.classList.add('hidden');
       newGameBtn.classList.add('hidden');
@@ -194,6 +247,10 @@
     var endMatchBtn = document.getElementById('endMatchBtn');
     endMatchBtn.classList.toggle('hidden', !!state.matchWinner);
     endMatchBtn.disabled = !!state.matchWinner;
+
+    if (!state.matchWinner && state.matchStartTime && !matchTimerHandle) {
+      startMatchTimer(state.matchStartTime);
+    }
 
     renderGameHistory(state);
   }

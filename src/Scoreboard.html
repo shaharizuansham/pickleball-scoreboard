@@ -60,6 +60,7 @@
 
     <div id="board" class="hidden">
       <div class="status-bar" id="statusBar"></div>
+      <div class="match-timer" id="matchTimer">⏱ 0:00</div>
       <div class="legend">Score shown as <b>points</b> for the receiving side, and <b>points-server#</b> (e.g. "2-2") for the side currently serving &mdash; the digit after the dash is server 1 or 2, not a second score. "Serving: [name]" under the green dot shows exactly who's up.</div>
       <div id="gameOverBanner" class="game-over-banner hidden"></div>
       <div id="matchOverBanner" class="match-over-banner hidden"></div>
@@ -107,8 +108,14 @@
   <div id="tab-history" class="tab-view hidden">
     <div class="page-inner">
       <h2>📜 Match History</h2>
-      <p class="sub">Every completed game, logged automatically to the <code>MatchHistory</code> sheet.</p>
       <button id="refreshHistoryBtn" type="button">Refresh</button>
+
+      <h3>Matches</h3>
+      <p class="sub">One row per completed match, with start/end time and total duration.</p>
+      <div id="matchesTableWrap"></div>
+
+      <h3>Games</h3>
+      <p class="sub">Every completed game, logged automatically to the <code>MatchHistory</code> sheet.</p>
       <div id="historyTableWrap"></div>
     </div>
   </div>

@@ -3,7 +3,8 @@
 A courtside digital scoreboard for **doubles pickleball**, built entirely on
 **Google Apps Script + Google Sheets**. No external hosting, no database —
 the Apps Script Web App *is* the scoreboard UI, and the container Google
-Sheet logs every completed game to a `MatchHistory` tab.
+Sheet logs every completed game to a `MatchHistory` tab and every completed
+match (with start/end time and total duration) to a `Matches` tab.
 
 ## How scoring works
 
@@ -69,18 +70,25 @@ The app has three tabs: **Scoreboard**, **History**, and **About & Rules**.
    side (e.g. "2-2" = 2 points, server #2).
 3. **−** (or the **Undo** button) reverts the last point awarded, or the
    last game completion.
-4. A running list of completed games for the current match is shown below
+4. A live **match timer** runs from the moment you tap Start Match, and
+   freezes ("final") once the match ends.
+5. A running list of completed games for the current match is shown below
    the score.
-5. When a game ends, tap **Start Next Game** to continue the match.
-6. **End Match** finishes the match early — winner is whichever side has
+6. When a game ends, tap **Start Next Game** to continue the match.
+7. **End Match** finishes the match early — winner is whichever side has
    won more games (ties are broken by the current game's score, if any
    points were played; if everything is still tied it won't auto-resolve).
-7. **Reset Match** clears the board to start over.
+   Ending the match stamps the end time and logs total duration.
+8. **Reset Match** clears the board to start over.
 
 ### History tab
-Shows every completed game ever logged, pulled live from the `MatchHistory`
-sheet — date, teams, game number, score, winner. Tap **Refresh** to pull
-the latest.
+Two tables, both pulled live from the spreadsheet:
+- **Matches** — one row per completed match: start time, end time, total
+  duration, teams, games won, winner.
+- **Games** — every individual completed game: date, teams, game number,
+  score, winner.
+
+Tap **Refresh** to pull the latest.
 
 ### About & Rules tab
 A quick-reference page covering what pickleball is, an SVG court layout
